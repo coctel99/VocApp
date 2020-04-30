@@ -24,7 +24,7 @@ public class Database {
     public String getUrl() {
         return dbUrl;
     }
-    public ConnectionSource getConnectionSource() {
+    public static ConnectionSource getConnectionSource() {
         return connectionSource;
     }
     public static CustomAccess<Definition,Long> getDefinitionAccess() {

@@ -1,10 +1,16 @@
 package GUI;
 
+import Core.Data.Access.CustomAccess;
+import Core.Data.Database;
+import Core.Data.Models.Word;
+import com.j256.ormlite.dao.Dao;
+
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.sql.SQLException;
 
 public class MainWindow extends JFrame{
     private static final Dimension dictionarySize=new Dimension(200,300);
@@ -14,7 +20,7 @@ public class MainWindow extends JFrame{
     private static final Dimension contextSize=new Dimension(400,60);
     private static final Dimension workWithTextSize=new Dimension(400,200);
 
-    public MainWindow(){
+    public MainWindow() throws SQLException {
         // Frame Preferences
         super("VocApp");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -26,7 +32,7 @@ public class MainWindow extends JFrame{
         final WordInfoLabel wordInfoLabel = new WordInfoLabel();
         final SortButton sortButton = new SortButton();
         final FilterButton filterButton = new FilterButton();
-        final WordTextField wordTextField=new WordTextField();
+        final WordTextField wordTextField= new WordTextField();
         final DefinitionTextField definitionTextField=new DefinitionTextField();
         final ContextTextArea contextTextArea =new ContextTextArea();
         final WorkWithTextTextArea workWithTextTextArea=new WorkWithTextTextArea();
@@ -117,11 +123,31 @@ public class MainWindow extends JFrame{
 
     //-----------ELEMENTS-------------
     private class DictionaryList extends JList{
-        DictionaryList(){
+        DictionaryList() throws SQLException {
             super();
+            /*
+            CustomAccess customAccess = new CustomAccess(Database.getConnectionSource(), Word.class) {
+                @Override
+                public Dao getDao() {
+                    return super.getDao();
+                }
+
+                @Override
+                public Object getById(Object id) throws SQLException {
+                    return super.getById(id);
+                }
+
+                @Override
+                public long count() throws SQLException {
+                    return super.count();
+                }
+            };
+
+            long number = customAccess.count();
+            */
             final DefaultListModel<String> listModel=new DefaultListModel();
             for(int i=0;i<50;i++){
-                listModel.addElement("test"+i);
+                listModel.addElement("word"+i);
             }
             this.setModel(listModel);
         }
@@ -210,13 +236,16 @@ public class MainWindow extends JFrame{
         }
     }
     private class WordTextField extends JTextField{
-        WordTextField(){
+        WordTextField() {
             super();
+            addKeyListener(enterPressedListener);
         }
     }
+
     private class DefinitionTextField extends JTextField{
         DefinitionTextField(){
             super();
+            addKeyListener(enterPressedListener);
         }
     }
     private class ContextTextArea extends JTextArea{
@@ -224,6 +253,7 @@ public class MainWindow extends JFrame{
             super();
             this.setLineWrap(true);
             this.setWrapStyleWord(true);
+            addKeyListener(enterPressedListener);
         }
     }
     private class WorkWithTextTextArea extends JTextArea{
@@ -238,6 +268,12 @@ public class MainWindow extends JFrame{
             super();
             JMenu profileMenu=new JMenu("Profile");
             JMenuItem profileMenuItem0=new JMenuItem("Create/Switch user");
+            profileMenuItem0.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    new ProfileWindow();
+                }
+            });
             JMenu dictionaryMenu=new JMenu("Dictionary");
             JMenuItem dictionaryMenuItem0=new JMenuItem("Clear");
             JMenu testMenu=new JMenu("Test");
@@ -258,4 +294,23 @@ public class MainWindow extends JFrame{
             this.add(helpMenu);
         }
     }
+
+    private KeyListener enterPressedListener = new KeyListener() {
+        @Override
+        public void keyTyped(KeyEvent e) {
+
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if(e.getKeyCode() == KeyEvent.VK_ENTER){
+                System.out.println("ENTER PRESSED");
+            }
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+
+        }
+    };
 }
